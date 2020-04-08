@@ -1,0 +1,80 @@
+#!/awips2/python/bin/python
+
+from awips.dataaccess import DataAccessLayer
+from dynamicserialize.dstypes.com.raytheon.uf.common.time import TimeRange
+from datetime import datetime, timedelta
+
+#connect to unidata edex
+DataAccessLayer.changeEDEXHost("edex-cloud.unidata.ucar.edu")
+
+#get a list of supported data types from the edex
+types = DataAccessLayer.getSupportedDatatypes()
+#print(types)
+
+#create a request and set the data type
+req = DataAccessLayer.newDataRequest()
+req.setDatatype("pirep")
+
+#print out available parameters
+param = DataAccessLayer.getAvailableParameters(req)
+print(param)
+
+times = DataAccessLayer.getAvailableTimes(req)
+#print(times)
+
+timerange = times[0:50]
+print(timerange)
+locations = DataAccessLayer.getAvailableLocationNames(req)
+print(locations)
+
+req.setParameters('turbInten')
+print(req)
+
+data = DataAccessLayer.getGeometryData(req,timerange)
+intensity = []
+for d in data:
+    intensity.append(d.getString("turbInten"))
+        
+latitude = []
+req.setParameters("latitude")
+data = DataAccessLayer.getGeometryData(req,timerange)
+for d in data:
+    latitude.append(d.getNumber("latitude"))
+            
+longitude = []
+req.setParameters("longitude")
+data = DataAccessLayer.getGeometryData(req,timerange)
+for d in data:
+    longitude.append(d.getNumber("longitude"))
+       
+turbTopHeight = []
+req.setParameters("turbTopHeight")
+data = DataAccessLayer.getGeometryData(req,timerange)
+for d in data: 
+    turbTopHeight.append(d.getNumber("turbTopHeight"))
+
+turbBaseHeight = []
+req.setParameters("turbBaseHeight")
+data = DataAccessLayer.getGeometryData(req,timerange)
+for d in data: 
+    turbBaseHeight.append(d.getNumber("turbBaseHeight"))
+    
+flightLevel = []
+req.setParameters("flightLevel")
+data = DataAccessLayer.getGeometryData(req,timerange)
+for d in data: 
+    flightLevel.append(d.getNumber("flightLevel"))
+        
+time = []
+req.setParameters("timeObs")
+data = DataAccessLayer.getGeometryData(req,timerange)
+for d in data:
+    time.append(d.getNumber("timeObs"))
+    
+"""Make sure all are the same length"""
+len(latitude)
+len(longitude)
+len(intensity)
+len(turbTopHeight)
+len(turbBaseHeight)
+len(flightLevel)
